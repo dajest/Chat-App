@@ -91,14 +91,18 @@ a {
 	overflow-y: scroll;
 }
 
-.chat-messages .message {
+.chat-messages .public-message, .chat-messages .private-message {
 	padding: 10px;
 	margin-bottom: 15px;
 	background-color: var(--light-color);
 	border-radius: 5px;
 }
 
-.chat-messages .message .meta {
+.chat-messages .private-message {
+	background-color: var(--success-color) !important;
+}
+
+.chat-messages .public-message .meta, .chat-messages .private-message .meta {
 	font-size: 15px;
 	font-weight: bold;
 	color: var(--dark-color-b);
@@ -106,7 +110,7 @@ a {
 	margin-bottom: 7px;
 }
 
-.chat-messages .message .meta span {
+.chat-messages .public-message .meta span, .chat-messages .private-message .meta span {
 	color: #777;
 }
 
@@ -186,4 +190,18 @@ a {
 	.chat-sidebar {
 		display: none;
 	}
+}
+
+.user-list-item {
+	cursor: pointer;
+}
+
+.private-mode {
+	color: #d9534f;
+	font-weight: bold;
+}
+
+.chat-message-user-name {
+	cursor: pointer;
+	text-decoration: underline;
 }
