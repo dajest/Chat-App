@@ -1,4 +1,5 @@
 const chatForm = document.getElementById("chat-form");
+const clearChatBtn = document.getElementById("clear-chat-btn");
 const chatMessageInput = document.getElementById("msg");
 const chatMessages = document.querySelector(".chat-messages");
 const roomName = document.getElementById("room-name");
@@ -45,7 +46,7 @@ chatForm.addEventListener("submit", (e) => {
       receiverId: privateUser,
       msg,
       type: "private",
-      sender: socket.id
+      sender: socket.id,
     });
   } else {
     socket.emit("chatMessage", { receiverId: "", msg, type: "public" });
@@ -75,11 +76,13 @@ function outputMessage(message) {
 }
 
 function personalMessagingSign(messageObj) {
-  return messageObj.sender ? `From ${messageObj.username} to: ${messageObj.receiverName}` : 'From: '
+  const alternativeMessageSigning = messageObj.type === "private" ? "Personaly From: " : " ";
+  const privateMessageSigning = `From ${messageObj.username} to: ${messageObj.receiverName}`;
+  return messageObj.sender ? privateMessageSigning : alternativeMessageSigning
 }
 
 function showUserNameInMessage(messageObj) {
-  return messageObj.sender ? '' : `${messageObj.username}`
+  return messageObj.sender ? "" : `${messageObj.username}`;
 }
 
 // Add roomname to DOM
@@ -94,34 +97,26 @@ function outputUsers(users) {
           .filter((user) => {
             return user.username !== username; // To hide self from user list
           })
-          .map(
-            (user) =>
-              `<li class="user-list-item">${user.username}</li>`
-          )
-          .join("")}
-    `;
+          .map((user) => `<li class="user-list-item">${user.username}</li>`)
+          .join("")}`;
   setClickHandler();
 }
 
 // Seting handler for user list private mode
 function setClickHandler() {
   document.addEventListener("click", (e) => {
-		if (e.target.classList.contains("chat-message-user-name")) {
-			// Придумать логику сопряжения клика по имени в чате и включению PrivateMode !!!!!!!!!!!!!!
-		}
-		
     if (e.target.classList.contains("user-list-item")) {
       if (!e.target.classList.contains("private-mode")) {
-				const pickedName = e.target.innerHTML;
-				privateUser = userList.filter((user) => pickedName === user.username)[0].id;
-				removePrivateMode();
-				e.target.classList.add("private-mode");
+        const pickedName = e.target.innerHTML;
+        privateUser = userList.filter((user) => pickedName === user.username)[0]
+          .id;
+        removePrivateMode();
+        e.target.classList.add("private-mode");
         chatMessageInput.focus();
-
       } else {
         removePrivateMode();
         privateUser = null;
-        chatMessageInput.value = '';
+        chatMessageInput.value = "";
         chatMessageInput.focus();
       }
       console.log(privateUser);
@@ -136,3 +131,10 @@ function removePrivateMode() {
     listItem.classList.remove("private-mode");
   });
 }
+
+// Clear Chat Window 
+clearChatBtn.addEventListener('click', e => {
+  e.preventDefault();
+  let clearingConfirm = confirm('Вы действительно хотите очистить окно чата??');
+  if(clearingConfirm) chatMessages.innerHTML = ''
+})

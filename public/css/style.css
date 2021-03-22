@@ -58,6 +58,10 @@ a {
 	justify-content: space-between;
 }
 
+.clear-chat-btn {
+	justify-self: flex-end;
+}
+
 .chat-main {
 	display: grid;
 	grid-template-columns: 1fr 3fr;
@@ -202,6 +206,5 @@ a {
 }
 
 .chat-message-user-name {
-	cursor: pointer;
 	text-decoration: underline;
 }
