@@ -69,16 +69,16 @@ io.on("connection", (socket) => {
     io.to(user.room).emit("message", formatMessage(user.username, msg, type));
   });
 
-  socket.on("privateChatMessage", ({ receiverId, msg, type }) => {
-    console.log(receiverId, msg, type );
+  socket.on("privateChatMessage", ({ receiverId, msg, type, sender }) => {
     const user = getCurrentUser(socket.id);
+    const receiverName = getCurrentUser(receiverId).username
     io.to(receiverId).emit("message", formatMessage(user.username, msg, type));
-    io.to(socket.id).emit("message", formatMessage(user.username, msg, type));
+    io.to(sender).emit("message", formatMessage(user.username, msg, type, sender, receiverName));
   });
   
 });
 
-const PORT = 3001 || process.env.PORT;
+const PORT = 3000 || process.env.PORT;
 server.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });

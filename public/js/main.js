@@ -1,4 +1,5 @@
 const chatForm = document.getElementById("chat-form");
+const chatMessageInput = document.getElementById("msg");
 const chatMessages = document.querySelector(".chat-messages");
 const roomName = document.getElementById("room-name");
 const userListNode = document.getElementById("users");
@@ -21,7 +22,6 @@ socket.on("roomUsers", ({ room, users }) => {
   outputRoomName(room);
   outputUsers(users);
   userList = users;
-  console.log(userList);
 });
 
 // Message from server
@@ -41,14 +41,13 @@ chatForm.addEventListener("submit", (e) => {
 
   // Emiting a message to server
   if (privateUser !== null) {
-    console.log("Private");
     socket.emit("privateChatMessage", {
       receiverId: privateUser,
       msg,
       type: "private",
+      sender: socket.id
     });
   } else {
-    console.log("Public");
     socket.emit("chatMessage", { receiverId: "", msg, type: "public" });
   }
 
@@ -64,16 +63,23 @@ function outputMessage(message) {
     message.type === "public" ? "public-message" : "private-message";
   const userNamePrivateStyling =
     message.type === "private" ? "chat-message-user-name" : "";
-  const personalMessagingSign = message.type === "private" ? "From: " : "";
   div.classList.add(messageStyleClass);
   div.innerHTML = `
-                    <p class="meta">${personalMessagingSign}
-												<span class="${userNamePrivateStyling}">${message.username}</span>
+                    <p class="meta">${personalMessagingSign(message)}
+												<span class="${userNamePrivateStyling}">${showUserNameInMessage(message)}</span>
                         <span>${message.time}</span>
                     </p>
                     <p class="text">${message.text}</p>
     `;
   document.querySelector(".chat-messages").appendChild(div);
+}
+
+function personalMessagingSign(messageObj) {
+  return messageObj.sender ? `From ${messageObj.username} to: ${messageObj.receiverName}` : 'From: '
+}
+
+function showUserNameInMessage(messageObj) {
+  return messageObj.sender ? '' : `${messageObj.username}`
 }
 
 // Add roomname to DOM
@@ -100,15 +106,23 @@ function outputUsers(users) {
 // Seting handler for user list private mode
 function setClickHandler() {
   document.addEventListener("click", (e) => {
+		if (e.target.classList.contains("chat-message-user-name")) {
+			// Придумать логику сопряжения клика по имени в чате и включению PrivateMode !!!!!!!!!!!!!!
+		}
+		
     if (e.target.classList.contains("user-list-item")) {
-      if (e.target.classList.contains("private-mode")) {
-        removePrivateMode();
-        privateUser = null;
-      } else {
+      if (!e.target.classList.contains("private-mode")) {
 				const pickedName = e.target.innerHTML;
 				privateUser = userList.filter((user) => pickedName === user.username)[0].id;
 				removePrivateMode();
 				e.target.classList.add("private-mode");
+        chatMessageInput.focus();
+
+      } else {
+        removePrivateMode();
+        privateUser = null;
+        chatMessageInput.value = '';
+        chatMessageInput.focus();
       }
       console.log(privateUser);
     }
