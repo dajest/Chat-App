@@ -107,6 +107,7 @@ function setClickHandler() {
   document.addEventListener("click", (e) => {
     if (e.target.classList.contains("user-list-item")) {
       if (!e.target.classList.contains("private-mode")) {
+        e.stopPropagation();
         const pickedName = e.target.innerHTML;
         privateUser = userList.filter((user) => pickedName === user.username)[0]
           .id;
@@ -114,12 +115,12 @@ function setClickHandler() {
         e.target.classList.add("private-mode");
         chatMessageInput.focus();
       } else {
+        e.stopPropagation();
         removePrivateMode();
         privateUser = null;
         chatMessageInput.value = "";
         chatMessageInput.focus();
       }
-      console.log(privateUser);
     }
     return;
   });
